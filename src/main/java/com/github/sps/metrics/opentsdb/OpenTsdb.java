@@ -48,6 +48,7 @@ public class OpenTsdb {
     private int batchSizeLimit = DEFAULT_BATCH_SIZE_LIMIT;
 
     private ObjectMapper mapper = new ObjectMapper();
+    private AsyncHttpClient asyncHttpClient;
 
     public static class Builder {
         private Integer connectionTimeout = CONN_TIMEOUT_DEFAULT_MS;
@@ -79,7 +80,7 @@ public class OpenTsdb {
                 .setConnectTimeout(connectionTimeout)
                 .setReadTimeout(readTimeout)
                 .build();
-        AsyncHttpClient asyncHttpClient = new AsyncHttpClient(cf);
+        asyncHttpClient = new AsyncHttpClient(cf);
 
         this.requestBuilder = asyncHttpClient.preparePost(baseURL + "/api/put");
     }
@@ -137,6 +138,12 @@ public class OpenTsdb {
             } catch (Throwable ex) {
                 logger.error("send to opentsdb endpoint failed", ex);
             }
+        }
+    }
+
+    public void close() {
+        if (!asyncHttpClient.isClosed()) {
+            asyncHttpClient.close();
         }
     }
 

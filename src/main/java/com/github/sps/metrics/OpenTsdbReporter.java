@@ -327,4 +327,10 @@ public class OpenTsdbReporter extends ScheduledReporter {
 
         return MetricRegistry.name(prefix, components);
     }
+
+    @Override
+    public void stop() {
+        super.stop();
+        opentsdb.close();
+    }
 }
